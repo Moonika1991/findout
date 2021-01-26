@@ -31,17 +31,11 @@ def validate(search_tree):
         if not result:
             return False
         schema = json.load(open("C:\\Users\\monik\\PycharmProjects\\findout\\etc\\functions\\%s.json" % (fun)))
-        print(schema)
         if int(schema.get('maxNumberOfArguments')) == -1:
             result = True
         elif int(schema.get('minNumberOfArguments')) <= len(edge[fun]) <= int(schema.get('maxNumberOfArguments')):
             result = True
         else:
             result = False
-        print(edge)
-        print(schema)
     return result
 
-
-x = parse('or(search(a,”example”),search(b,"another example"))  search(c,"code") ')
-print(validate(x))
