@@ -1,8 +1,8 @@
 import regex
 import json
+from pathlib import Path
 
-
-class SearchConnector:
+class Connectors:
 
     def parse(self, search):
         UNQUOTED_NAME = r'(?:\w[[:alnum:]_]*)'
@@ -24,6 +24,7 @@ class SearchConnector:
         return result
 
     def validate(self, search_tree):
+        path = Path(__file__).resolve().parents[1]
         result = True
         for edge in search_tree:
             if type(edge) == str:
@@ -32,7 +33,7 @@ class SearchConnector:
             result = self.validate(edge[fun])
             if not result:
                 return False
-            schema = json.load(open("C:\\Users\\monik\\PycharmProjects\\findout\\etc\\functions\\%s.json"%(fun)))
+            schema = json.load(open("%s\\etc\\functions\\%s.json" % (path, fun)))
             if int(schema.get('maxNumberOfArguments')) == -1:
                 result = True
             elif int(schema.get('minNumberOfArguments')) <= len(edge[fun]) <= int(schema.get('maxNumberOfArguments')):
