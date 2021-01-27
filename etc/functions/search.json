@@ -1,5 +1,5 @@
 {"minNumberOfArguments" : 1,
- "maxNumberOfArguments": 0,
-  "functionClass": "Search",
-  "canBeReduced": "True"
+ "maxNumberOfArguments": 2,
+ "functionClass": "Search",
+ "canBeReduced": "True"
 }

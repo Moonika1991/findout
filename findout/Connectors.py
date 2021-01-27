@@ -3,7 +3,11 @@ import json
 
 
 def parse(search):
-    pattern = r'(?P<fullmatch>(?P<name>\w[[:alnum:]]*)(?:\((?P<args>(?:[^\(\)]|(?R))*)\))?)'
+    UNQUOTED_NAME = r'(?:\w[[:alnum:]_]*)'
+    QUOTED_NAME = r'(?:\"(?:\\.|[^\"])*\")'
+
+    NAME = r'(?P<name>%s|%s)' % (UNQUOTED_NAME, QUOTED_NAME)
+    pattern = r'(?P<fullmatch>%s(?:\((?P<args>(?:[^\(\)]|(?R))*)\))?)' % NAME
     p = regex.compile(pattern)
     result = []
     for m in p.finditer(search):
@@ -40,5 +44,3 @@ def validate(search_tree):
     return result
 
 
-x= parse('or(search(a,”example”),search(b,”another”))  search(c,"code") ')
-print(validate(x))
