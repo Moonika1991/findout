@@ -1,7 +1,8 @@
-from findout.Connectors import Connectors
+from findout.QueryParser import QueryParser
 
-search = 'or(search(a,"example"),search(b,"another example"))  search(c,"code") '
+search = 'source("osdfosfn", "osdfjerjnfg") or(search(a,"example"),search(b,"another example"))  search(c,"code") '
 
-sc = Connectors()
+sc = QueryParser(search)
+print(QueryParser.get_source(sc))
 
-print(sc.validate(sc.parse(search)))
+
