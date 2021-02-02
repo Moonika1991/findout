@@ -6,9 +6,12 @@ from pathlib import Path
 class QueryParser:
 
     def __init__(self, search):
-        self.parsed = self.__parse(search)
-        self.__validate(self.parsed)
-        self.functions = self.parsed
+        query = self.__source(search)
+        self.source = query[0]
+        parsed = self.__parse(query[1])
+        self.__validate(parsed)
+        # if there is no error parsed is valid list of functions
+        self.functions = parsed
 
     def get_source(self):
         return self.source
@@ -16,6 +19,15 @@ class QueryParser:
     def get_func(self):
         return self.functions
 
+    def __source(self, query):
+        pattern = r'source\((?P<args>(?:[^\(\)])*)\)'
+        match = regex.search(pattern, query)
+        if match is None:
+            raise Exception('Incorrect source format!')
+        s = match.group('args').replace('"', '')
+        source = s.split(',')
+        func = query[match.end()+1:]
+        return source, func
     # syntactic analysis of query
     def __parse(self, search):
         UNQUOTED_NAME = r'(?:\w[[:alnum:]_]*)'
@@ -28,14 +40,10 @@ class QueryParser:
         if match.group('name') is None:
             raise Exception('Incorrect query! Syntactic analysis failed!')
         result = []
-        self.source = ''
         for m in p.finditer(search):
             tmp = m.groupdict()
             # to avoid adding empty matches to result array
             if tmp['fullmatch'] == '':
-                continue
-            elif tmp['name'] == 'source':
-                self.source = tmp['args']
                 continue
             elif tmp['args'] and "," in tmp['args']:
                 tmp['args'] = self.__parse(tmp['args'])

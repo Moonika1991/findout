@@ -5,15 +5,19 @@ class Connector(ABC):
     # Factory method  product
 
     @abstractmethod
-    def search(self) -> list:
+    def search(self, *args) -> dict:
         pass
 
-    #altarnative
+    @abstractmethod
+    def grater_than(self, col_name, value) -> dict:
+        pass
+
+    # alternative
     @abstractmethod
     def alt(self) -> list:
         pass
 
-    #conjunction
+    # conjunction
     @abstractmethod
     def con(self) -> list:
         pass
