@@ -47,15 +47,32 @@ class QueryParser:
                 continue
             elif tmp['args'] and "," in tmp['args']:
                 tmp['args'] = self.__parse(tmp['args'])
-                result.append({tmp['name']: tmp['args']})
+                temp = []
+                for arg in tmp['args']:
+                    if '"' in arg:
+                        last_char = len(arg) - 1
+                        arg = arg[1:last_char]
+                        temp.append(arg.replace('\"', '"'))
+                    else:
+                        temp.append(arg)
+                result.append({tmp['name']: temp})
             elif "(" in tmp['fullmatch']:
-                result.append({tmp['name']: tmp['args']})
+                temp = []
+                for arg in tmp['args']:
+                    if '"' in arg:
+                        last_char = len(arg)-1
+                        arg = arg[1:last_char]
+                        temp.append(arg.replace('\"', '"'))
+                    else:
+                        temp.append(arg)
+                result.append({tmp['name']: temp})
             else:
                 result.append(tmp['name'])
         return result
 
     # semantic analysis of search tree
     def __validate(self, search_tree):
+        # partial path to json schema
         path = Path(__file__).resolve().parents[1]
         result = True
         for edge in search_tree:
@@ -66,7 +83,8 @@ class QueryParser:
             if not result:
                 raise Exception('Incorrect query! Semantic analysis failed!')
             schema = json.load(open("%s\\etc\\functions\\%s.json" % (path, fun)))
-            if int(schema.get('maxNumberOfArguments')) == -1:
+            if (int(schema.get('maxNumberOfArguments')) == -1) & (int(schema.get('minNumberOfArguments')) <= len(
+                    edge[fun])):
                 result = True
             elif int(schema.get('minNumberOfArguments')) <= len(edge[fun]) <= int(schema.get('maxNumberOfArguments')):
                 result = True
