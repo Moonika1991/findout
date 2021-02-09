@@ -1,12 +1,14 @@
 from findout.QueryParser import QueryParser
 from findout.ConnectorFactory import ConnectorFactory
 
-search = 'source("osdfosfn", "osdfjerjnfg") or(search(a, b),search(b,"another example"))  search(c,"code") '
+search = 'source("ExampleCSV") or("Country/Region", "Province/State")'
 
-connector_factory = ConnectorFactory()
+parser = QueryParser(search)
 
-connector = connector_factory.create_connector('ExampleCSV')
+name = parser.get_source()
 
-print(connector.search("Country/Region", "Australia"))
+connector = ConnectorFactory().create_connector(name)
 
+fun = parser.get_func()
 
+print(connector.execute(fun))
