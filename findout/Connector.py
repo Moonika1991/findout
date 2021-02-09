@@ -9,7 +9,7 @@ class Connector(ABC):
         pass
 
     @abstractmethod
-    def search(self, *args):
+    def search(self, args):
         pass
 
     @abstractmethod
@@ -18,7 +18,7 @@ class Connector(ABC):
 
     # alternative
     @abstractmethod
-    def alt(self):
+    def alt(self, args):
         pass
 
     # conjunction
