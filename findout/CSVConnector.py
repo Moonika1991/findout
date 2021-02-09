@@ -13,12 +13,12 @@ class CSVConnector(Connector):
         res_args = args
         part_result = query
         if any(type(arg) is dict for arg in args):
-            # query must be a list of dicts (arg is dict)
             pos = 0
             for arg in args:
                 if type(arg) is str:
                     pos += 1
                     continue
+                # query must be a list of dicts (arg is dict)
                 temp_query = [arg]
                 part = self.execute(temp_query)
                 if type(arg) is pd.DataFrame:
@@ -30,9 +30,10 @@ class CSVConnector(Connector):
                     pos += 1
             part_result[0][fun] = res_args
             result = self.execute(part_result)
-                # result = [part if i == arg else i for i in result]
         elif fun == 'search':
             result = self.search(args)
+        elif fun == 'gt':
+            result = self.grater_than(args)
         elif fun == 'or':
             result = self.alt(args)
         return result
@@ -46,8 +47,11 @@ class CSVConnector(Connector):
             result = sel
         return result
 
-    def grater_than(self, col_name, value):
-        pass
+    def grater_than(self, args):
+        col = args[0]
+        value = float(args[1])
+        result = self._start_object.loc[self._start_object[col] > value]
+        return result
 
     # alternative
     def alt(self, args):
