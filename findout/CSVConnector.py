@@ -6,21 +6,36 @@ class CSVConnector(Connector):
 
     def __init__(self, access):
         self._start_object = pd.read_csv(access.get('path'), sep=access.get('sep'))
-        self._current_object = pd.DataFrame()
 
     def execute(self, query):
-        for edge in query:
-            print(edge)
-            fun = list(edge.keys())[0]
-            args = edge[fun]
-            if all(isinstance(arg, str) for arg in args):
-                if fun == 'search':
-                    self._current_object = self.search(args)
-            else:
-                for arg in args:
-                    if type(arg) == dict:
-                        self.execute(arg)
-        return self._current_object
+        fun = list(query[0].keys())[0]
+        args = query[0][fun]
+        res_args = args
+        part_result = query
+        if any(type(arg) is dict for arg in args):
+            # query must be a list of dicts (arg is dict)
+            pos = 0
+            for arg in args:
+                if type(arg) is str:
+                    pos += 1
+                    continue
+                temp_query = [arg]
+                part = self.execute(temp_query)
+                if type(arg) is pd.DataFrame:
+                    pos += 1
+                    continue
+                else:
+                    res_args.pop(pos)
+                    res_args.insert(pos, part)
+                    pos += 1
+            part_result[0][fun] = res_args
+            result = self.execute(part_result)
+                # result = [part if i == arg else i for i in result]
+        elif fun == 'search':
+            result = self.search(args)
+        elif fun == 'or':
+            result = self.alt(args)
+        return result
 
     def search(self, args):
         if len(args) == 1:
@@ -35,8 +50,15 @@ class CSVConnector(Connector):
         pass
 
     # alternative
-    def alt(self):
-        return
+    def alt(self, args):
+        result = pd.DataFrame()
+        for arg in args:
+            if type(arg) == str:
+                sel = self._start_object[arg]
+                result = result.append(sel)
+            else:
+                result = result.append(arg)
+        return result
 
     # conjunction
     def con(self):
