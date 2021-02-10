@@ -48,6 +48,8 @@ class CSVConnector(Connector):
                 result = self._start_object.loc[self._start_object[col] <= val]
         elif fun == 'or':
             result = self.alt(args)
+        elif fun == 'and':
+            result = self.conj(args)
         return result
 
     def alt(self, args):
@@ -55,6 +57,14 @@ class CSVConnector(Connector):
         for arg in args:
             result = pd.concat([result, arg]).drop_duplicates()
             result = result.sort_index()
+        return result
+
+    def conj(self, args):
+        comp = args[0]
+        for arg in args[1:]:
+            comp = comp.merge(arg, indicator=True, how='outer')
+            result = comp[comp['_merge'] == 'both']
+            result = result.drop('_merge', 1)
         return result
 
 
