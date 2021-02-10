@@ -1,7 +1,7 @@
 from findout.QueryParser import QueryParser
 from findout.ConnectorFactory import ConnectorFactory
 
-search = 'source("ExampleCSV") or("Country/Region", "Province/State")'
+search = 'source("ExampleCSV") col(and(goe("1/27/20", 4), equal("Country/Region", Australia)), "Country/Region", Lat, Long, "1/27/20")'
 
 parser = QueryParser(search)
 
