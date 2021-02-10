@@ -50,6 +50,10 @@ class CSVConnector(Connector):
             result = self.alt(args)
         elif fun == 'and':
             result = self.conj(args)
+        elif fun == 'col':
+            result = self.col(args)
+        elif fun == 'exc':
+            result = self.exc(args)
         return result
 
     def alt(self, args):
@@ -61,12 +65,23 @@ class CSVConnector(Connector):
 
     def conj(self, args):
         comp = args[0]
+        result = pd.DataFrame()
         for arg in args[1:]:
             comp = comp.merge(arg, indicator=True, how='outer')
             result = comp[comp['_merge'] == 'both']
             result = result.drop('_merge', 1)
         return result
 
+    def col(self, args):
+        df = args[0]
+        result = pd.DataFrame()
+        for arg in args[1:]:
+            col = df[arg]
+            result = pd.concat([result, col], 1)
+        return result
 
-
-
+    def exc(self, args):
+        result = args[0]
+        for arg in args[1:]:
+            result = result.drop(arg, 1)
+        return result
