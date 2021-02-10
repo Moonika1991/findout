@@ -14,3 +14,11 @@ class Connector(ABC):
 
     def conj(self, args):
         pass
+
+    @abstractmethod
+    def col(self, args):
+        pass
+
+    @abstractmethod
+    def exc(self, args):
+        pass
