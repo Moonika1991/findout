@@ -30,39 +30,32 @@ class CSVConnector(Connector):
                     pos += 1
             part_result[0][fun] = res_args
             result = self.execute(part_result)
-                # result = [part if i == arg else i for i in result]
-        elif fun == 'search':
-            result = self.search(args)
+        elif all(type(arg) is str for arg in args):
+            col = args[0]
+            if args[1].isdigit():
+                val = float(args[1])
+            else:
+                val = args[1]
+            if fun == 'equal':
+                result = self._start_object.loc[self._start_object[col] == val]
+            elif fun == 'gt':
+                result = self._start_object.loc[self._start_object[col] > val]
+            elif fun == 'lt':
+                result = self._start_object.loc[self._start_object[col] < val]
+            elif fun == 'goe':
+                result = self._start_object.loc[self._start_object[col] >= val]
+            elif fun == 'loe':
+                result = self._start_object.loc[self._start_object[col] <= val]
         elif fun == 'or':
             result = self.alt(args)
         return result
 
-    def search(self, args):
-        if len(args) == 1:
-            sel = self._start_object[args[0]]
-            result = sel
-        else:
-            sel = self._start_object.loc[self._start_object[args[0]] == args[1]]
-            result = sel
-        return result
-
-    def grater_than(self, col_name, value):
-        pass
-
-    # alternative
     def alt(self, args):
         result = pd.DataFrame()
         for arg in args:
-            if type(arg) == str:
-                sel = self._start_object[arg]
-                result = result.append(sel)
-            else:
-                result = result.append(arg)
+            result = pd.concat([result, arg]).drop_duplicates()
+            result = result.sort_index()
         return result
-
-    # conjunction
-    def con(self):
-        return
 
 
 

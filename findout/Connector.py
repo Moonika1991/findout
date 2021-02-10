@@ -9,19 +9,5 @@ class Connector(ABC):
         pass
 
     @abstractmethod
-    def search(self, args):
-        pass
-
-    @abstractmethod
-    def grater_than(self, col_name, value):
-        pass
-
-    # alternative
-    @abstractmethod
     def alt(self, args):
-        pass
-
-    # conjunction
-    @abstractmethod
-    def con(self):
         pass
