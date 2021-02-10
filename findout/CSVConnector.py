@@ -13,12 +13,12 @@ class CSVConnector(Connector):
         res_args = args
         part_result = query
         if any(type(arg) is dict for arg in args):
-            # query must be a list of dicts (arg is dict)
             pos = 0
             for arg in args:
                 if type(arg) is str:
                     pos += 1
                     continue
+                # query must be a list of dicts (arg is dict)
                 temp_query = [arg]
                 part = self.execute(temp_query)
                 if type(arg) is pd.DataFrame:
