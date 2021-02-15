@@ -1,4 +1,5 @@
 {
     "type" : "sql",
-    "path" : ""
+    "db_name" : "COVID_19_data.db",
+    "table_name" : "COVID19_data"
 }
