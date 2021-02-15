@@ -12,6 +12,7 @@ class Connector(ABC):
     def alt(self, args):
         pass
 
+    @abstractmethod
     def conj(self, args):
         pass
 
