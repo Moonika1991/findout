@@ -13,11 +13,13 @@ class SQLConnector(Connector):
         fun = list(query[0].keys())[0]
         args = query[0][fun]
         formatted = self.format_query(query)
+        print(formatted)
         if fun == 'col':
             final = self.col(args)
+        elif fun == 'exc':
+            final = self.exc(args)
         else:
             final = 'SELECT * FROM ' + self.tab_name + ' WHERE ' + formatted
-        print(final)
 
         self.cur.execute(final)
         rows = self.cur.fetchall()
@@ -58,6 +60,8 @@ class SQLConnector(Connector):
                 result = self.alt(args)
             elif fun == 'and':
                 result = self.conj(args)
+            else:
+                result = query
         return result
 
     def alt(self, args):
@@ -85,4 +89,13 @@ class SQLConnector(Connector):
         return sql_query
 
     def exc(self, args):
-        return
+        self.cur.execute('SELECT * FROM ' + self.tab_name)
+        col_names = [tuple[0] for tuple in self.cur.description]
+        for arg in args[1:]:
+            col_names.remove(arg)
+        sql_query = 'SELECT '
+        for name in col_names:
+            sql_query += '"' + name + '", '
+        sql_query = sql_query[:len(sql_query) - 2]
+        sql_query += ' FROM ' + self.tab_name + ' WHERE ' + args[0]
+        return sql_query

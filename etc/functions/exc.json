@@ -1,5 +1,5 @@
 { "minNumberOfArguments" : 2,
   "maxNumberOfArguments": -1,
-  "functionClass": "except column selection",
+  "functionClass": "exclude",
   "canBeReduced": "True"
 }
