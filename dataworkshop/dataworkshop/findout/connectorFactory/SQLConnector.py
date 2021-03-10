@@ -1,4 +1,6 @@
-from findout.Connector import Connector
+import json
+
+from .Connector import Connector
 import sqlite3
 
 
@@ -13,18 +15,19 @@ class SQLConnector(Connector):
         fun = list(query[0].keys())[0]
         args = query[0][fun]
         formatted = self.format_query(query)
-        print(formatted)
         if fun == 'col':
-            final = self.col(args)
+            final_query = self.col(args)
         elif fun == 'exc':
-            final = self.exc(args)
+            final_query = self.exc(args)
         else:
-            final = 'SELECT * FROM ' + self.tab_name + ' WHERE ' + formatted
+            final_query = 'SELECT * FROM ' + self.tab_name + ' WHERE ' + formatted
 
-        self.cur.execute(final)
-        rows = self.cur.fetchall()
-        for row in rows:
-            print(row)
+        rows = self.cur.execute(final_query).fetchall()
+        keys = [tup[0] for tup in self.cur.description]
+
+        json_result = [dict((keys[i], value) for i, value in enumerate(row)) for row in rows]
+
+        return json_result
 
     def format_query(self, query):
         global result
@@ -47,15 +50,18 @@ class SQLConnector(Connector):
         elif all(type(arg) is str for arg in args):
             col = args[0]
             if fun == 'equal':
-                result = '"' + col + '"' + '=' + '"' + args[1] + '"'
+                if type(args[1]) is str:
+                    result = '"' + col + '"' + '=' + '"' + args[1] + '"'
+                else:
+                    result = '"' + col + '"' + '=' + args[1]
             elif fun == 'gt':
-                result = '"' + col + '"' + '>' + '"' + args[1] + '"'
+                result = '"' + col + '"' + '>' + args[1]
             elif fun == 'lt':
-                result = '"' + col + '"' '<' + '"' + args[1] + '"'
+                result = '"' + col + '"' '<' + args[1]
             elif fun == 'goe':
-                result = '"' + col + '"' + '>=' + '"' + args[1] + '"'
+                result = '"' + col + '"' + '>=' + args[1]
             elif fun == 'loe':
-                result = '"' + col + '"' '<=' + '"' + args[1] + '"'
+                result = '"' + col + '"' '<=' + args[1]
             elif fun == 'or':
                 result = self.alt(args)
             elif fun == 'and':
@@ -88,6 +94,7 @@ class SQLConnector(Connector):
         sql_query += ' FROM ' + self.tab_name + ' WHERE ' + args[0]
         return sql_query
 
+    # except function
     def exc(self, args):
         self.cur.execute('SELECT * FROM ' + self.tab_name)
         col_names = [tuple[0] for tuple in self.cur.description]
