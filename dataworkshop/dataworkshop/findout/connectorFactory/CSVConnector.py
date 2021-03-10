@@ -1,4 +1,4 @@
-from findout.Connector import Connector
+from .Connector import Connector
 import pandas as pd
 
 
@@ -12,6 +12,7 @@ class CSVConnector(Connector):
         args = query[0][fun]
         res_args = args
         part_result = query
+        result = pd.DataFrame()
         if any(type(arg) is dict for arg in args):
             pos = 0
             for arg in args:
